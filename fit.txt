@@ -1,0 +1,68 @@
+                                        中间件安装部署
+1.首先是我们的nginx，前面我们已经配置好了Nginx，接下来我们需要配置其他的东西
+
+二、java环境
+
+通过官网下载jdk的安装包
+wget --no-cookies --no-check-certificate --header "Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com%2F; oraclelicense=accept-securebackup-cookie" "http://download.oracle.com/otn-pub/java/jdk/8u141-b15/336fa29ff2bb4ef291e347e091f7f4a7/jdk-8u141-linux-x64.tar.gz"
+
+解压安装包，并将解压好的安装包移动到/usr/local/java目录下
+tar xzf jdk-8u141-linux-x64.tar.gz
+mv jdk1.8.0_141/ /usr/local/java
+
+配置环境变量，vim  /etc/profile
+JAVA_HOME=/usr/local/java/
+JRE_HOME=/usr/local/java/jre
+CLASS_PATH=.:$JAVA_HOME/lib/dt.jar:$JAVA_HOME/lib/tools.jar:$JRE_HOME/lib
+PATH=$PATH:$JAVA_HOME/bin:$JRE_HOME/bin
+export JAVA_HOME JRE_HOME CLASS_PATH PATH
+
+刷新环境变量
+source /etc/profile  
+
+测试环境是否配置成功
+java –version
+
+三、tomcat安装
+
+通过官网tomcat下载的安装包
+wget https://mirrors.cnnic.cn/apache/tomcat/tomcat-8/v8.5.81/bin/apache-tomcat-8.5.81.tar.gz
+
+解压安装包到/usr/local目录下
+tar xf apache-tomcat-8.5.81.tar.gz -C /usr/local/
+
+定义tomcat所需的环境变量
+echo "export TOMCAT_HOME=/usr/local/tomcat" >> /etc/profile
+
+重新加载环境变量
+source /etc/profile
+
+启动tomcat
+/usr/local/tomcat/bin/startup.sh
+如果启动不了。就cd到对应的目录里面查看是否·有这个目录.
+
+关闭tomcat命令
+/usr/local/tomcat/bin/shutdown.sh
+如果关闭不了。就cd到对应的目录里面查看是否·有这个目录.
+
+
+使用server启动tomcat
+通过编写一个脚本文件执行启动命令
+#!/bin/bash 
+# Init file for Tomcat server daemon
+#
+# chkconfig: 2345 96 14 
+# description: Tomcat server daemon
+JAVA_OPTS='-Xms64m -Xmx128m'
+JAVA_HOME=/usr/local/java CATALINA_HOME=/usr/local/tomcat
+export JAVA_OPTS JAVA_HOME CATALINA_HOME
+exec $CATALINA_HOME/bin/catalina.sh $*
+
+修改启动脚本权限，增加可执行权限
+chmod +x /etc/init.d/tomcat
+
+启动tomcat
+service tomcat start
+
+访问你的IP+8080端口
+是虚拟机的ip地址
